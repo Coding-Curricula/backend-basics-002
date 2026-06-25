@@ -3,17 +3,32 @@ const fs = require("fs");
 const app = express();
 const PORT = 8080;
 
+// Middleware to parse JSON bodies
 app.use(express.json()); // <-- Required for req.body
+
+// auth middleware
+const authMiddleware = (req, res, next) => {
+  // check for authorization header
+  const authHeader = req.headers.deliciousCookies;
+
+  // check if the authorization header is present and valid
+  if (!authHeader || authHeader !== "Bearer mysecrettoken") {
+    return res.status(401).send("Unauthorized");
+  }
+
+  // if the authorization header is valid, call next() to proceed to the next middleware or route handler
+  next();
+};
 
 // attach db.json as a temporary database for the application
 const db = JSON.parse(fs.readFileSync("db.json", "utf-8"));
 
-//  GET - /api/v1/health - gives health status of the application
+//  GET - /api/v1/health - gives health status of the application - PUBLIC
 app.get("/api/v1/health", (req, res) => {
   res.send("Alive out here!");
 });
 
-// GET - /api/v1/howdy?name=string - returns a greeting message with the name provided in the query parameter
+// GET - /api/v1/howdy?name=string - returns a greeting message with the name provided in the query parameter - PUBLIC
 app.get("/api/v1/howdy", (req, res) => {
   const name = req.query.name;
   if (!name) {
@@ -22,7 +37,7 @@ app.get("/api/v1/howdy", (req, res) => {
   res.send(`Howdy, ${name}!`);
 });
 
-// GET - /api/v1/blogs - returns a list of blog posts
+// GET - /api/v1/blogs - returns a list of blog posts - PUBLIC
 app.get("/api/v1/blogs", (req, res) => {
   try {
     res.json(db.blogs);
@@ -31,7 +46,7 @@ app.get("/api/v1/blogs", (req, res) => {
   }
 });
 
-// GET - /api/v1/blogs/:id - returns a specific blog post by ID
+// GET - /api/v1/blogs/:id - returns a specific blog post by ID - PUBLIC
 app.get("/api/v1/blogs/:id", (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
@@ -45,8 +60,8 @@ app.get("/api/v1/blogs/:id", (req, res) => {
   }
 });
 
-// POST - /api/v1/blogs - creates a new blog post that writes to db.json and returns the created blog post
-app.post("/api/v1/blogs", async (req, res) => {
+// POST - /api/v1/blogs - creates a new blog post that writes to db.json and returns the created blog post - PRIVATE (requires auth middleware)
+app.post("/api/v1/blogs", authMiddleware, async (req, res) => {
   try {
     const newBlog = req.body;
     newBlog.id = db.blogs.length + 1; // simple ID assignment
@@ -58,8 +73,8 @@ app.post("/api/v1/blogs", async (req, res) => {
   }
 });
 
-// PUT - /api/v1/blogs/:id - updates a specific blog post by ID
-app.put("/api/v1/blogs/:id", (req, res) => {
+// PUT - /api/v1/blogs/:id - updates a specific blog post by ID - PRIVATE (requires auth middleware)
+app.put("/api/v1/blogs/:id", authMiddleware, (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     const index = db.blogs.findIndex((b) => b.id === id);
@@ -74,8 +89,8 @@ app.put("/api/v1/blogs/:id", (req, res) => {
   }
 });
 
-// PATCH - /api/v1/blogs/:id - partially updates a specific blog post by ID
-app.patch("/api/v1/blogs/:id", (req, res) => {
+// PATCH - /api/v1/blogs/:id - partially updates a specific blog post by ID - PRIVATE (requires auth middleware)
+app.patch("/api/v1/blogs/:id", authMiddleware, (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     const blog = db.blogs.find((b) => b.id === id);
@@ -92,8 +107,8 @@ app.patch("/api/v1/blogs/:id", (req, res) => {
   }
 });
 
-// DELETE - /api/v1/blogs/:id - deletes a specific blog post by ID
-app.delete("/api/v1/blogs/:id", (req, res) => {
+// DELETE - /api/v1/blogs/:id - deletes a specific blog post by ID - PRIVATE (requires auth middleware)
+app.delete("/api/v1/blogs/:id", authMiddleware, (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     const index = db.blogs.findIndex((b) => b.id === id);
@@ -109,8 +124,8 @@ app.delete("/api/v1/blogs/:id", (req, res) => {
   }
 });
 
-// DELETE ALL - /api/v1/blogs - deletes all blog posts
-app.delete("/api/v1/blogs", (req, res) => {
+// DELETE ALL - /api/v1/blogs - deletes all blog posts - PRIVATE (requires auth middleware)
+app.delete("/api/v1/blogs", authMiddleware, (req, res) => {
   try {
     db.blogs = [];
     fs.writeFileSync("db.json", JSON.stringify(db, null, 2)); // write to db.json
