@@ -52,42 +52,64 @@ app.post("/api/v1/blogs", async (req, res) => {
 
 // PUT - /api/v1/blogs/:id - updates a specific blog post by ID
 app.put("/api/v1/blogs/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const index = db.blogs.findIndex((b) => b.id === id);
-  if (index === -1) {
-    return res.status(404).send("Blog not found");
+  try {
+    const id = parseInt(req.params.id, 10);
+    const index = db.blogs.findIndex((b) => b.id === id);
+    if (index === -1) {
+      return res.status(404).send("Blog not found");
+    }
+    db.blogs[index] = req.body;
+    fs.writeFileSync("db.json", JSON.stringify(db, null, 2)); // write to db.json
+    res.json(db.blogs[index]);
+  } catch (error) {
+    res.status(500).send("Error updating blog post");
   }
-  db.blogs[index] = req.body;
-  fs.writeFileSync("db.json", JSON.stringify(db, null, 2)); // write to db.json
-  res.json(db.blogs[index]);
 });
 
 // PATCH - /api/v1/blogs/:id - partially updates a specific blog post by ID
 app.patch("/api/v1/blogs/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const blog = db.blogs.find((b) => b.id === id);
-  if (!blog) {
-    return res.status(404).send("Blog not found");
+  try {
+    const id = parseInt(req.params.id, 10);
+    const blog = db.blogs.find((b) => b.id === id);
+    if (!blog) {
+      return res.status(404).send("Blog not found");
+    }
+
+    Object.assign(blog, req.body);
+    fs.writeFileSync("db.json", JSON.stringify(db, null, 2)); // write to db.json
+
+    res.json(blog);
+  } catch (error) {
+    res.status(500).send("Error updating blog post");
   }
-  Object.assign(blog, req.body);
-  res.json(blog);
 });
 
 // DELETE - /api/v1/blogs/:id - deletes a specific blog post by ID
 app.delete("/api/v1/blogs/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const index = db.blogs.findIndex((b) => b.id === id);
-  if (index === -1) {
-    return res.status(404).send("Blog not found");
+  try {
+    const id = parseInt(req.params.id, 10);
+    const index = db.blogs.findIndex((b) => b.id === id);
+    if (index === -1) {
+      return res.status(404).send("Blog not found");
+    }
+    db.blogs.splice(index, 1);
+
+    fs.writeFileSync("db.json", JSON.stringify(db, null, 2)); // write to db.json
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).send("Error deleting blog post");
   }
-  db.blogs.splice(index, 1);
-  res.status(204).send();
 });
 
 // DELETE ALL - /api/v1/blogs - deletes all blog posts
 app.delete("/api/v1/blogs", (req, res) => {
-  db.blogs = [];
-  res.status(204).send();
+  try {
+    db.blogs = [];
+    fs.writeFileSync("db.json", JSON.stringify(db, null, 2)); // write to db.json
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).send("Error deleting all blog posts");
+  }
 });
 
 app.listen(PORT, () => {

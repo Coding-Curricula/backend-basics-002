@@ -1,24 +1,3 @@
 {
-  "blogs": [
-    {
-      "id": 1,
-      "title": "My First Blog",
-      "content": "This is the content of my first blog post."
-    },
-    {
-      "id": 2,
-      "title": "My Second Blog",
-      "content": "This is the content of my second blog post."
-    },
-    {
-      "id": 3,
-      "title": "My Third Blog",
-      "content": "This is the content of my third blog post."
-    },
-    {
-      "title": "this is a test title",
-      "content": "this is some test content blah blah",
-      "id": 4
-    }
-  ]
+  "blogs": []
 }
