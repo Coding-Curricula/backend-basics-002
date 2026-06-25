@@ -37,12 +37,13 @@ app.get("/api/v1/blogs/:id", (req, res) => {
   res.json(blog);
 });
 
-// POST - /api/v1/blogs - creates a new blog post
-app.post("/api/v1/blogs", (req, res) => {
+// POST - /api/v1/blogs - creates a new blog post that writes to db.json and returns the created blog post
+app.post("/api/v1/blogs", async (req, res) => {
   try {
     const newBlog = req.body;
     newBlog.id = db.blogs.length + 1; // simple ID assignment
     db.blogs.push(newBlog);
+    fs.writeFileSync("db.json", JSON.stringify(db, null, 2)); // write to db.json
     res.status(201).json(newBlog);
   } catch (error) {
     res.status(500).send("Error creating blog post");
@@ -57,6 +58,7 @@ app.put("/api/v1/blogs/:id", (req, res) => {
     return res.status(404).send("Blog not found");
   }
   db.blogs[index] = req.body;
+  fs.writeFileSync("db.json", JSON.stringify(db, null, 2)); // write to db.json
   res.json(db.blogs[index]);
 });
 
