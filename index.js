@@ -29,12 +29,16 @@ app.get("/api/v1/blogs", (req, res) => {
 
 // GET - /api/v1/blogs/:id - returns a specific blog post by ID
 app.get("/api/v1/blogs/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const blog = db.blogs.find((b) => b.id === id);
-  if (!blog) {
-    return res.status(404).send("Blog not found");
+  try {
+    const id = parseInt(req.params.id, 10);
+    const blog = db.blogs.find((b) => b.id === id);
+    if (!blog) {
+      return res.status(404).send("Blog not found");
+    }
+    res.json(blog);
+  } catch (error) {
+    res.status(500).send("Error retrieving blog post");
   }
-  res.json(blog);
 });
 
 // POST - /api/v1/blogs - creates a new blog post that writes to db.json and returns the created blog post
