@@ -1,0 +1,30 @@
+{
+  "name": "backend-basics-002",
+  "version": "1.0.0",
+  "description": "howdy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "format": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Coding-Curricula/backend-basics-002.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Coding-Curricula/backend-basics-002/issues"
+  },
+  "homepage": "https://github.com/Coding-Curricula/backend-basics-002#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "prettier": "^3.8.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
