@@ -24,7 +24,11 @@ app.get("/api/v1/howdy", (req, res) => {
 
 // GET - /api/v1/blogs - returns a list of blog posts
 app.get("/api/v1/blogs", (req, res) => {
-  res.json(db.blogs);
+  try {
+    res.json(db.blogs);
+  } catch (error) {
+    res.status(500).send("Error retrieving blog posts");
+  }
 });
 
 // GET - /api/v1/blogs/:id - returns a specific blog post by ID
