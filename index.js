@@ -3,16 +3,18 @@ const fs = require("fs");
 const app = express();
 const PORT = 8080;
 
+require("dotenv").config(); // Load environment variables from .env file
+
 // Middleware to parse JSON bodies
 app.use(express.json()); // <-- Required for req.body
 
 // auth middleware
 const authMiddleware = (req, res, next) => {
   // check for authorization header
-  const authHeader = req.headers.deliciousCookies;
+  const authHeader = req.headers.authorization;
 
   // check if the authorization header is present and valid
-  if (!authHeader || authHeader !== "Bearer mysecrettoken") {
+  if (!authHeader || authHeader !== `Bearer ${process.env.MY_SECRET_TOKEN}`) {
     return res.status(401).send("Unauthorized");
   }
 

@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Coding-Curricula/backend-basics-002#readme",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "prettier": "^3.8.4"
   },
